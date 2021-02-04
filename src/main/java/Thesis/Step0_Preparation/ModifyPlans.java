@@ -22,7 +22,7 @@ import org.opengis.feature.simple.SimpleFeature;
 public class ModifyPlans {
 
     private static final String PLANSFILEINPUT = "input/plans_2011_onlyAuto.xml";
-    private static final String PLANSFILEOUTPUT = "input/plans_2011_onlyAuto_inMUC.xml";
+    private static final String PLANSFILEOUTPUT = "output/plans_2011_onlyAuto_inMUC.xml";
     private static final String Network = "input/mergedNetwork2018.xml";
     private static final String COUNTIES = "src/main/java/RandomDemandGeneration/lkr_ex.shp";          //Polygon shapefile for demand generation
 

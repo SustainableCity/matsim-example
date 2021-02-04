@@ -1,6 +1,5 @@
 package RandomDemandGeneration;
 
-import com.sun.webkit.dom.HTMLLinkElementImpl;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
