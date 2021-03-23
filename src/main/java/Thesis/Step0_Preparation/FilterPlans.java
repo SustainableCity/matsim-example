@@ -19,12 +19,12 @@ import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
-public class ModifyPlans {
+public class FilterPlans {
 
-    private static final String PLANSFILEINPUT = "input/plans_2011_onlyAuto.xml";
-    private static final String PLANSFILEOUTPUT = "output/plans_2011_onlyAuto_inMUC.xml";
-    private static final String Network = "input/mergedNetwork2018.xml";
-    private static final String COUNTIES = "src/main/java/RandomDemandGeneration/lkr_ex.shp";          //Polygon shapefile for demand generation
+    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_2011.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_2011_onlyAuto_inMUC.xml";
+    private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
+    private static final String COUNTIES = "C:/matsimfiles/input/lkr_ex.shp";          //Polygon shapefile for demand generation
 
 
 

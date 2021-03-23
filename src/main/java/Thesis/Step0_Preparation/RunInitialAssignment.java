@@ -23,30 +23,34 @@ public class RunInitialAssignment {
         config.controler().setMobsim("qsim");
         config.controler().setWritePlansInterval(config.controler().getLastIteration());
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
-        config.controler().setOutputDirectory("OutputMunich_Johann");
+        config.controler().setOutputDirectory("C:/matsimfiles/output/simulation");
         config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 
         config.qsim().setEndTime(24*3600);
         config.qsim().setTrafficDynamics(QSimConfigGroup.TrafficDynamics.withHoles);
-        //config.qsim().setFlowCapFactor(0.1);
-        //config.qsim().setStorageCapFactor(0.1);
+        config.qsim().setFlowCapFactor(0.1);
+        config.qsim().setStorageCapFactor(0.1);
         config.qsim().setStuckTime(10);
         config.qsim().setNumberOfThreads(16);
         config.global().setNumberOfThreads(16);
         config.parallelEventHandling().setNumberOfThreads(16);
         config.qsim().setUsingThreadpool(false);
 
-        config.network().setInputFile("input/mergedNetwork2018.xml");
-        config.plans().setInputFile("input/plans_2011_onlyAuto_inMUC.xml");
+        config.network().setInputFile("C:/matsimfiles/input/mergedNetwork2018.xml");
+        config.plans().setInputFile("C:/matsimfiles/input/plans_2011_onlyAuto_inMUC_inclGarages1.xml");
         config.transit().setUseTransit(true);
-        config.transit().setTransitScheduleFile("input/schedule2018.xml");
-        config.transit().setVehiclesFile("input/vehicles2018.xml");
+        config.transit().setTransitScheduleFile("C:/matsimfiles/input/schedule2018.xml");
+        config.transit().setVehiclesFile("C:/matsimfiles/input/vehicles2018.xml");
         config.transit().setTransitModes(Sets.newHashSet("pt"));
-        //config.vspExperimental().setWritingOutputEvents(true);
+        config.vspExperimental().setWritingOutputEvents(true);
 
+
+        PlanCalcScoreConfigGroup.ActivityParams garage = new PlanCalcScoreConfigGroup.ActivityParams("garage");
+        garage.setTypicalDuration(12 * 60 * 60);
+        config.planCalcScore().addActivityParams(garage);
 
         PlanCalcScoreConfigGroup.ActivityParams home = new PlanCalcScoreConfigGroup.ActivityParams("home");
-        home.setTypicalDuration(12 * 60 * 60);
+        home.setTypicalDuration(15 * 60);
         config.planCalcScore().addActivityParams(home);
 
         PlanCalcScoreConfigGroup.ActivityParams work = new PlanCalcScoreConfigGroup.ActivityParams("work");
@@ -70,13 +74,13 @@ public class RunInitialAssignment {
         config.planCalcScore().addActivityParams(airport);
 
 
-//        PlansCalcRouteConfigGroup.ModeRoutingParams car = new PlansCalcRouteConfigGroup.ModeRoutingParams("car");
-//        car.setTeleportedModeFreespeedFactor(1.0);
-//        config.plansCalcRoute().addModeRoutingParams(car);
+        PlansCalcRouteConfigGroup.ModeRoutingParams car = new PlansCalcRouteConfigGroup.ModeRoutingParams("car");
+        car.setTeleportedModeFreespeedFactor(1.0);
+        config.plansCalcRoute().addModeRoutingParams(car);
 
-//        PlansCalcRouteConfigGroup.ModeRoutingParams pt = new PlansCalcRouteConfigGroup.ModeRoutingParams("pt");
-//        pt.setTeleportedModeFreespeedFactor(1.0);
-//        config.plansCalcRoute().addModeRoutingParams(pt);
+        PlansCalcRouteConfigGroup.ModeRoutingParams pt = new PlansCalcRouteConfigGroup.ModeRoutingParams("pt");
+        pt.setTeleportedModeFreespeedFactor(1.0);
+        config.plansCalcRoute().addModeRoutingParams(pt);
 
         PlansCalcRouteConfigGroup.ModeRoutingParams bike = new PlansCalcRouteConfigGroup.ModeRoutingParams("bike");
         bike.setBeelineDistanceFactor(2.0);
@@ -98,14 +102,13 @@ public class RunInitialAssignment {
         }
         {
             StrategyConfigGroup.StrategySettings strat = new StrategyConfigGroup.StrategySettings();
-            strat.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.ChangeExpBeta.toString());
+            strat.setStrategyName(DefaultPlanStrategiesModule.DefaultSelector.ChangeExpBeta);
             strat.setWeight(0.1);
             config.strategy().addStrategySettings(strat);
         }
 
         config.strategy().setFractionOfIterationsToDisableInnovation(0.8);
         config.strategy().setMaxAgentPlanMemorySize(4);
-
 
         Scenario scenario = ScenarioUtils.loadScenario(config) ;
 
