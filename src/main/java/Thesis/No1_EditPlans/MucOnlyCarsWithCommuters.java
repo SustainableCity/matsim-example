@@ -40,6 +40,7 @@ public class MucOnlyCarsWithCommuters {
 
         final Population pop = scenario.getPopulation();
 
+        int countPlans = 0;
         System.out.println(pop.getPersons().size());
 
         Map<String, Geometry> shapeMap;
@@ -74,9 +75,11 @@ public class MucOnlyCarsWithCommuters {
                     }
                     break Legloop;
                 }
+            countPlans = countPlans + 1;
             }
 
             System.out.println(pop.getPersons().size());
+        System.out.println("Counted Plans " + countPlans);
 
             PopulationWriter pw = new PopulationWriter(scenario.getPopulation(), scenario.getNetwork());
             pw.write(PLANSFILEOUTPUT);

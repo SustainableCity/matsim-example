@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class AddingGarages {
 
-    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_CarCom.xml";
+    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plansTest.xml";
     private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarComGaragesT.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
     private static final String Garages = "C:/matsimfiles/input/testgarages.csv";
@@ -92,7 +92,7 @@ public class AddingGarages {
 
     public Coord selectGarage(int idGarage) {
 
-        System.out.println(garageListX);
+        //System.out.println(garageListX);
         double x = garageListX.get(idGarage);
         double y = garageListY.get(idGarage);
 
@@ -145,6 +145,30 @@ public class AddingGarages {
         return selectGarage(distances.indexOf(Collections.min(distances)) + 1);
     }
 
+   /* public Coord chooseGarageByDistrict (Coord HomeCoord) {
+            Map<String, Geometry> shapeMap;
+            shapeMap = readShapeFile(DISTRICTS, "SCH");
+            Geometry stadtteil = shapeMap.get("09162");
+
+        if (stadtteil.contains(HomeCoord)){
+            if (capacity OKAY) {
+                return garageCoord of stadtteil;
+            } else if {
+                chooseGarageByDistance
+            }
+        } else if (stadtteil.contains(HomeCoord)){
+            return garageCoord of stadtteil
+        } else if (){
+
+        } else {
+
+        }
+
+
+
+
+    }*/
+
 /*    public Coord chooseGarageByDistrict (Coord HomeCoord) {
         Map<String, com.vividsolutions.jts.geom.Geometry> shapeMap;
         shapeMap = readShapeFile(DISTRICTS, "Borough");
@@ -165,8 +189,9 @@ public class AddingGarages {
         //break; // return GarageID
 
     }*/
-
+int countPlans;
     public void addGarage2Plan(Population popInitial, Scenario scenarioNew) {
+
 
         for (Person person : popInitial.getPersons().values()) {
             Id<Person> personId = Id.createPersonId(person.getId()); //get initial person id to new
@@ -190,130 +215,163 @@ public class AddingGarages {
             double x2;
             double y2;
 
-            for (Leg leg0 : TripStructureUtils.getLegs(plan)) {
-                x1 = PlanUtils.getPreviousActivity(plan, leg0).getCoord().getX();
-                y1 = PlanUtils.getPreviousActivity(plan, leg0).getCoord().getY();
-                x2 = PlanUtils.getNextActivity(plan, leg0).getCoord().getX();
-                y2 = PlanUtils.getNextActivity(plan, leg0).getCoord().getY();
-                p1 = MGC.xy2Point(x1, y1);
-                p2 = MGC.xy2Point(x2, y2);
+            if (random >=0.7) {
+                int oldLegCount = 1;
 
-                if (random >= 0.7){
-                   if (munich.contains(p1) && munich.contains(p2)){
-                       for (Leg leg : TripStructureUtils.getLegs(plan)) {
-                           endHomeTime1 = PlanUtils.getPreviousActivity(plan, leg).getEndTime();
-                           HomeLocation = PlanUtils.getPreviousActivity(plan, leg).getCoord();
+                for (Leg leg : TripStructureUtils.getLegs(plan)) {
+                    x1 = PlanUtils.getPreviousActivity(plan, leg).getCoord().getX();
+                    y1 = PlanUtils.getPreviousActivity(plan, leg).getCoord().getY();
+                    x2 = PlanUtils.getNextActivity(plan, leg).getCoord().getX();
+                    y2 = PlanUtils.getNextActivity(plan, leg).getCoord().getY();
+                    p1 = MGC.xy2Point(x1, y1);
+                    p2 = MGC.xy2Point(x2, y2);
 
-                           curGarage = chooseGarageByDistance(personId + "departure ", HomeLocation);
+                    if (munich.contains(p1) && munich.contains(p2)) {
+                        if (oldLegCount == 1) {
+                            endHomeTime1 = PlanUtils.getPreviousActivity(plan, leg).getEndTime();
+                            HomeLocation = PlanUtils.getPreviousActivity(plan, leg).getCoord();
 
-                           Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
-                           garage1.setEndTime(endHomeTime1 - garageDistances.get(personId + "departure ") / 30); // determine average speed
+                            curGarage = chooseGarageByDistance(personId + "departure ", HomeLocation);
 
-                           planNew.addActivity(garage1);
-                           System.out.print("davor ");
-                           Leg pickUp = scenarioNew.getPopulation().getFactory().createLeg("car");
-                           planNew.addLeg(pickUp);
-                           break;
-                       }
+                            Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
+                            garage1.setEndTime(endHomeTime1 - garageDistances.get(personId + "departure ") / 30); // determine average speed
 
-                       int oldLegCount = 1;
-                       //Activityloop:
-                       for (Leg leg : TripStructureUtils.getLegs(plan)) {
+                            planNew.addActivity(garage1);
+                            //System.out.print("davor ");
+                            Leg pickUp = scenarioNew.getPopulation().getFactory().createLeg("car");
+                            planNew.addLeg(pickUp);
 
-                           Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
-                           Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
-                           actNew.setEndTime(actOld.getEndTime());
-                           planNew.addActivity(actNew);
+                           /* time1 = PlanUtils.getPreviousActivity(plan, leg).getEndTime();
+                            time2 = PlanUtils.getNextActivity(plan, leg).getEndTime();
+                            IF(time2-time1>=2.5*3600){
+                                //Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
+                                //Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
+                                //actNew2.setEndTime(actOld2.getEndTime());
+                                //actNew2.setMaximumDuration(90);
+                                //planNew.addActivity(actNew2);
 
-                           planNew.addLeg(leg);
-                           System.out.print("inzwischen ");
-                           if (oldLegCount == legSize) {
+                                Leg dropOffI = scenarioNew.getPopulation().getFactory().createLeg("car");
+                                planNew.addLeg(dropOffI);
 
-                               Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
-                               Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
-                               //actNew2.setEndTime(actOld2.getEndTime());
-                               actNew2.setMaximumDuration(90);
-                               planNew.addActivity(actNew2);
+                                Coord DestinationLocation;
+                                DestinationLocation = PlanUtils.getNextActivity(plan, leg).getCoord();
+                                Coord coord2 = chooseGarageByDistance(personId + "returning ", DestinationLocation);
+                                Activity garageIntermediate = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", coord2);
+                                garageIntermediate.setEndTime(time2-90);
+                                planNew.addActivity(garage2);
 
-                               Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
-                               planNew.addLeg(dropOff);
+                                Leg pickUpI = scenarioNew.getPopulation().getFactory().createLeg("car");
+                                planNew.addLeg(pickUpI);
+                            }*/
 
-                               Coord DestinationLocation;
-                               DestinationLocation = actNew2.getCoord();
-                               Coord coord2 = chooseGarageByDistance(personId + "returning ", DestinationLocation);
-                               Activity garage2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", coord2);
-                               planNew.addActivity(garage2);
+                        }
 
-                           }
-                           oldLegCount += 1;
-                       }
-                   } else if(munich.contains(p1) && !munich.contains(p2)) {
-                       for (Leg leg : TripStructureUtils.getLegs(plan)) {
-                           endHomeTime1 = PlanUtils.getPreviousActivity(plan, leg).getEndTime();
-                           HomeLocation = PlanUtils.getPreviousActivity(plan, leg).getCoord();
 
-                           curGarage = chooseGarageByDistance(personId + "departure ", HomeLocation);
+                        //Copy OldPlan and Adding Garage:
+                            Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
+                            Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
+                            actNew.setEndTime(actOld.getEndTime());
+                            planNew.addActivity(actNew);
 
-                           Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
-                           garage1.setEndTime(endHomeTime1 - garageDistances.get(personId + "departure ") / 30); // determine average speed
+                            planNew.addLeg(leg);
+                            //System.out.print("inzwischen ");
 
-                           planNew.addActivity(garage1);
+                            if (oldLegCount == legSize) {
+                                Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
+                                Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
+                                //actNew2.setEndTime(actOld2.getEndTime());
+                                actNew2.setMaximumDuration(90);
+                                planNew.addActivity(actNew2);
 
-                           Leg pickUp = scenarioNew.getPopulation().getFactory().createLeg("car");
-                           planNew.addLeg(pickUp);
-                           System.out.println("StarteinMUCG ");
-                           break;
-                       }
-                       //Activityloop:
-                       for (Leg leg : TripStructureUtils.getLegs(plan)) {
+                                Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
+                                planNew.addLeg(dropOff);
 
-                           Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
-                           Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
-                           actNew.setEndTime(actOld.getEndTime());
-                           planNew.addActivity(actNew);
-                           System.out.println("StarteinMUCH ");
-                           //planNew.addLeg(leg);
-                       }
-                   } else {
+                                Coord DestinationLocation;
+                                DestinationLocation = actNew2.getCoord();
+                                Coord coord2 = chooseGarageByDistance(personId + "returning ", DestinationLocation);
+                                Activity garage2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", coord2);
+                                planNew.addActivity(garage2);
+                                break;
+                            }
+                            oldLegCount += 1;
 
-                       int oldLegCount = 1;
-                       //Activityloop:
-                       for (Leg leg : TripStructureUtils.getLegs(plan)) {
+                    } else if (munich.contains(p1) && !munich.contains(p2)) {
 
-                           Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
-                           Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
-                           actNew.setEndTime(actOld.getEndTime());
-                           planNew.addActivity(actNew);
+                        if (oldLegCount == 1) {
+                            endHomeTime1 = PlanUtils.getPreviousActivity(plan, leg).getEndTime();
+                            HomeLocation = PlanUtils.getPreviousActivity(plan, leg).getCoord();
 
-                           planNew.addLeg(leg);
+                            curGarage = chooseGarageByDistance(personId + "departure ", HomeLocation);
 
-                           if (oldLegCount == legSize) {
+                            Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
+                            garage1.setEndTime(endHomeTime1 - garageDistances.get(personId + "departure ") / 30); // determine average speed
 
-                               Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
-                               Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
-                               //actNew2.setEndTime(actOld2.getEndTime());
-                               actNew2.setMaximumDuration(90);
-                               planNew.addActivity(actNew2);
+                            planNew.addActivity(garage1);
 
-                               Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
-                               planNew.addLeg(dropOff);
+                            Leg pickUp = scenarioNew.getPopulation().getFactory().createLeg("car");
+                            planNew.addLeg(pickUp);
+                            //System.out.println("StarteinMUCG ");
+                        }
 
-                               Coord DestinationLocation;
-                               DestinationLocation = actNew2.getCoord();
-                               Coord coord2 = chooseGarageByDistance(personId + "returning ", DestinationLocation);
-                               Activity garage2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", coord2);
-                               planNew.addActivity(garage2);
-                               System.out.println("EndeinMUCG ");
-                           }
-                           oldLegCount += 1;
-                       }
-                   }
+                        //Copy OldPlan:
+                            Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
+                            Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
+                            actNew.setEndTime(actOld.getEndTime());
+                            planNew.addActivity(actNew);
+                            //System.out.println("StarteinMUCH ");
+                            planNew.addLeg(leg);
 
-                } else {
+                            if (oldLegCount == legSize) {
+
+                                Activity actOld2 = PlanUtils.getNextActivity(plan,leg);
+                                Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
+                                //actNew2.setEndTime(actOld2.getEndTime());
+                                actNew2.setMaximumDuration(90);
+                                planNew.addActivity(actNew2);
+                                break;
+                            }
+                            oldLegCount += 1;
+
+                    } else {
+
+
+                        //EndInMuc: Copy OldPlan and Adding Garage:
+
+                            Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
+                            Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
+                            actNew.setEndTime(actOld.getEndTime());
+                            planNew.addActivity(actNew);
+
+                            planNew.addLeg(leg);
+
+                            if (oldLegCount == legSize) {
+
+                                Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
+                                Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
+                                //actNew2.setEndTime(actOld2.getEndTime());
+                                actNew2.setMaximumDuration(90);
+                                planNew.addActivity(actNew2);
+
+                                Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
+                                planNew.addLeg(dropOff);
+
+                                Coord DestinationLocation;
+                                DestinationLocation = actNew2.getCoord();
+                                Coord coord2 = chooseGarageByDistance(personId + "returning ", DestinationLocation);
+                                Activity garage2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", coord2);
+                                planNew.addActivity(garage2);
+                                //System.out.println("EndeinMUCG ");
+                                break;
+                            }
+                            oldLegCount += 1;
+                    }
+                }
+
+            } else {
                     int oldLegCount = 1;
-                    //Activityloop:
+                    //random <0.7 (only) Copy OldPlan:
                     for (Leg leg : TripStructureUtils.getLegs(plan)) {
-                        System.out.println("KopierePlan ");
+                        //System.out.println("KopierePlan ");
                         Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
                         Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
                         actNew.setEndTime(actOld.getEndTime());
@@ -327,11 +385,11 @@ public class AddingGarages {
                             Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                             actNew2.setEndTime(actOld2.getEndTime());
                             planNew.addActivity(actNew2);
-
+                            break;
                         }
                         oldLegCount += 1;
                     }
-                }
+            }
 
 
                 /*if (random >= 0.7 && munich.contains(p1)) {
@@ -406,17 +464,21 @@ public class AddingGarages {
                         }
                         oldLegCount += 1;
                     }*/
-                }
-            System.out.println("SchreibePlan ");
-                personNew.addPlan(planNew);
-                scenarioNew.getPopulation().addPerson(personNew);
 
+            //System.out.println("SchreibePlan ");
+            personNew.addPlan(planNew);
+            scenarioNew.getPopulation().addPerson(personNew);
+            System.out.println("GaragelistCapacity " + garageListCapacity);
+            System.out.println("PersonID " + personId);
+            countPlans = countPlans + 1;
+            System.out.println("CountedPlan " + countPlans);
             }
 
             //Write the population file to specified folder
             PopulationWriter pw = new PopulationWriter(scenarioNew.getPopulation(), scenarioNew.getNetwork());
             pw.write(PLANSFILEOUTPUT);
             int noPersons = popInitial.getPersons().size();
+            System.out.println("Number of Persons");
             System.out.println(noPersons);
             int noPersonsN = popModified.getPersons().size();
             System.out.println(noPersonsN);
