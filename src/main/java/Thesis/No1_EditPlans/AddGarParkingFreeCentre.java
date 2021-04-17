@@ -32,8 +32,8 @@ import java.util.Map;
 
 public class AddGarParkingFreeCentre {
 
-    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plansTestC.xml";
-    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plansTestCG.xml";
+    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plansTest.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plansTestG.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
     private static final String Garages = "C:/matsimfiles/input/testgarages2.csv";
     private static final String DISTRICTS = "C:/matsimfiles/input/MunichDistricts.shp";
@@ -669,6 +669,17 @@ public class AddGarParkingFreeCentre {
                 System.out.println("Number of Persons Modified: "+ noPersonsN);
                 System.out.println("Garagelist Capacity " + garageListCapacity);
                 System.out.println("Counted Plans Total " + countPlans);
+                System.out.println("PersonsWithinCentre " + PersonsWithinCentre);
+                System.out.println("CommutersStartingAt P&R" + CommutersStartingAtParkAndRide);
+                System.out.println("Commuters ending at P&R" + CommutersEndingAtParkAndRide);
+                System.out.println("Trips from centre to munichG" + TripsFromCentreToMunichG);
+                System.out.println("Trips from MunichG to centre" + TripsFromMunichToCentreG);
+                System.out.println("Trips from Centre to Munich" + TripsFromCentreToMunich);
+                System.out.println("Trips from Munich to centre" + TripsFromMunichToCentre);
+                System.out.println("Within MunichG" + PersonsWithinMunichG);
+                System.out.println("Commuters starting in MunichG" + CommutersStartingInMunichG);
+                System.out.println("Commuters ending in MunichG" + CommutersEndingInMunichG);
+                System.out.println("Trips without adding a garage" + TripsWithoutAddingGarage);
 
         }
     }
