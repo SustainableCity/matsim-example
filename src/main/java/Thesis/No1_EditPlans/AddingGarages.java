@@ -44,11 +44,11 @@ public class AddingGarages {
     private static Scenario scenario;
     private static Scenario scenarioNew;
 
-    private static final Map<Integer, Integer> garageListCapacity = new HashMap<>();
-    private static final Map<Integer, Double> garageListX = new HashMap<>();
-    private static final Map<Integer, Double> garageListY = new HashMap<>();
+    private static final Map<Integer, Integer> garageListCapacity = new HashMap<>(40);
+    private static final Map<Integer, Double> garageListX = new HashMap<>(40);
+    private static final Map<Integer, Double> garageListY = new HashMap<>(40);
     private static final Map<Integer, Integer> garageDistricts = new HashMap<>();
-    private static final Map<String, Double> garageDistances = new HashMap<>();
+    private static final Map<String, Double> garageDistances = new HashMap<>(40);
     int PersonsWithinMunich = 0;
     int CommutersStartingInMunich = 0;
     int CommutersEndingInMunich = 0;
