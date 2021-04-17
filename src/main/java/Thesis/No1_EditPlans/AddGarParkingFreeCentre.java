@@ -32,10 +32,10 @@ import java.util.Map;
 
 public class AddGarParkingFreeCentre {
 
-    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_CarCom_5.xml";
-    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarComGarages1_5.xml";
+    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plansTestC.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plansTestCG.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
-    private static final String Garages = "C:/matsimfiles/input/testgarages1.csv";
+    private static final String Garages = "C:/matsimfiles/input/testgarages2.csv";
     private static final String DISTRICTS = "C:/matsimfiles/input/MunichDistricts.shp";
     //    private static final String garagePath = "C:/matsimfiles/output/Garages.xml";    //The output file of demand generation
     private static final String COUNTIES = "C:/matsimfiles/input/lkr_ex.shp";
@@ -54,13 +54,14 @@ public class AddGarParkingFreeCentre {
     int PersonsWithinCentre = 0;
     int CommutersStartingAtParkAndRide = 0;
     int CommutersEndingAtParkAndRide = 0;
-    int TripsFromCentreToMunich = 0;
-    int TripsFromMunichToCentre = 0;
     int TripsFromCentreToMunichG = 0;
     int TripsFromMunichToCentreG = 0;
+    int TripsFromCentreToMunich = 0;
+    int TripsFromMunichToCentre = 0;
     int PersonsWithinMunichG = 0;
     int CommutersStartingInMunichG = 0;
     int CommutersEndingInMunichG = 0;
+    int TripsWithoutAddingGarage = 0;
     double AvSpeed = 30/3.6;
 
 
@@ -202,7 +203,6 @@ public class AddGarParkingFreeCentre {
 
                 if (random >= 0.7) {
                     if (centre.contains(p1) && centre.contains(p2)) {
-
                         PersonsWithinCentre = PersonsWithinCentre + 1;
 
                     } else if (centre.contains(p1) && !centre.contains(p2) && munich.contains(p2)) {
@@ -355,6 +355,34 @@ public class AddGarParkingFreeCentre {
                         }
                         oldLegCount += 1;
 
+                    } else if (!munich.contains(p1) && munich.contains(p2)) {
+                        //System.out.println("CopyPlan ");
+                        Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
+                        Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
+                        actNew.setEndTime(actOld.getEndTime());
+                        planNew.addActivity(actNew);
+
+                        planNew.addLeg(leg);
+
+                        if (oldLegCount == legSize) {
+                            Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
+                            Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
+                            //actNew2.setEndTime(actOld2.getEndTime());
+                            actNew2.setMaximumDuration(90);
+                            planNew.addActivity(actNew2);
+
+                            Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
+                            planNew.addLeg(dropOff);
+
+                            Coord DestinationLocation;
+                            DestinationLocation = actNew2.getCoord();
+                            Coord coord2 = chooseGarageByDistance(personId + "returning ", DestinationLocation);
+                            Activity garage2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", coord2);
+                            planNew.addActivity(garage2);
+                            CommutersEndingInMunichG = CommutersEndingInMunichG +1;
+                            break;
+                        }
+                        oldLegCount += 1;
 
                     } else if (munich.contains(p1) && munich.contains(p2)) {
                         if (oldLegCount == 1) {
@@ -612,6 +640,7 @@ public class AddGarParkingFreeCentre {
                                 Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                                 actNew2.setEndTime(actOld2.getEndTime());
                                 planNew.addActivity(actNew2);
+                                TripsWithoutAddingGarage = TripsWithoutAddingGarage + 1;
                                 break;
                             }
                             oldLegCount += 1;
