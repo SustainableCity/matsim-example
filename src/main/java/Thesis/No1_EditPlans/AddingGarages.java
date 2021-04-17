@@ -256,7 +256,7 @@ public class AddingGarages {
 
                             PersonsWithinMunichG = PersonsWithinMunichG + 1;
 
-                            time1 = PlanUtils.getPreviousActivity(plan, leg).getEndTime();
+/*                            time1 = PlanUtils.getPreviousActivity(plan, leg).getEndTime();
                             time2 = PlanUtils.getNextActivity(plan, leg).getEndTime();
                             if (time2 - time1 >= 2.25 * 3600) {
                                 Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
@@ -277,7 +277,7 @@ public class AddingGarages {
 
                                 Leg pickUpI = scenarioNew.getPopulation().getFactory().createLeg("car");
                                 planNew.addLeg(pickUpI);
-                            }
+                            }*/
 
                         }
 

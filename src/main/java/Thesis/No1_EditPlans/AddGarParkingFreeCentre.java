@@ -61,6 +61,9 @@ public class AddGarParkingFreeCentre {
     int PersonsWithinMunichG = 0;
     int CommutersStartingInMunichG = 0;
     int CommutersEndingInMunichG = 0;
+    int TripsWithinMunich = 0;
+    int CommutersStartingInMunich = 0;
+    int CommutersEndingInMunich = 0;
     int TripsWithoutAddingGarage = 0;
     double AvSpeed = 30/3.6;
 
@@ -605,7 +608,7 @@ public class AddGarParkingFreeCentre {
                             oldLegCount += 1;
 
                         } else if (!munich.contains(p1) && centre.contains(p2)) {
-                            //System.out.println("KopierePlan ");
+                            //System.out.println("CopyPlan ");
                             Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
                             Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
                             actNew.setEndTime(actOld.getEndTime());
@@ -628,6 +631,16 @@ public class AddGarParkingFreeCentre {
                             oldLegCount += 1;
 
                         } else {
+
+                            if (munich.contains(p1) && munich.contains(p2)) {
+                                TripsWithinMunich = TripsWithinMunich + 1;
+
+                            } else if (munich.contains(p1) && !munich.contains(p2)) {
+                                CommutersStartingInMunich = CommutersStartingInMunich + 1;
+
+                            } else {
+                                CommutersEndingInMunich = CommutersEndingInMunich + 1;
+                            }
 
                             Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
                             Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
@@ -654,7 +667,7 @@ public class AddGarParkingFreeCentre {
                     //System.out.println("WritePlan");
                     personNew.addPlan(planNew);
                     scenarioNew.getPopulation().addPerson(personNew);
-                    System.out.println("Garagelist Capacity " + garageListCapacity);
+                    System.out.println("Current Garagelist Capacity " + garageListCapacity);
                     System.out.println("PersonID " + personId);
                     countPlans = countPlans + 1;
                     System.out.println("Counted Plan " + countPlans);
@@ -665,21 +678,24 @@ public class AddGarParkingFreeCentre {
                 PopulationWriter pw = new PopulationWriter(scenarioNew.getPopulation(), scenarioNew.getNetwork());
                 pw.write(PLANSFILEOUTPUT);
                 int noPersons = popInitial.getPersons().size();
-                System.out.println("Number of Persons " + noPersons);
+                System.out.println("Initial number of persons " + noPersons);
                 int noPersonsN = popModified.getPersons().size();
-                System.out.println("Number of Persons Modified: "+ noPersonsN);
-                System.out.println("Garagelist Capacity " + garageListCapacity);
-                System.out.println("Counted Plans Total " + countPlans);
-                System.out.println("PersonsWithinCentre " + PersonsWithinCentre);
-                System.out.println("CommutersStartingAt P&R " + CommutersStartingAtParkAndRide);
+                System.out.println("Number of persons modified: "+ noPersonsN);
+                System.out.println("Capacities of garages " + garageListCapacity);
+                System.out.println("Counted plans total " + countPlans);
+                System.out.println("Persons within centre " + PersonsWithinCentre);
+                System.out.println("Commuters starting at P&R " + CommutersStartingAtParkAndRide);
                 System.out.println("Commuters ending at P&R " + CommutersEndingAtParkAndRide);
-                System.out.println("Trips from centre to munichG " + TripsFromCentreToMunichG);
+                System.out.println("Trips from centre to MunichG " + TripsFromCentreToMunichG);
                 System.out.println("Trips from MunichG to centre " + TripsFromMunichToCentreG);
-                System.out.println("Trips from Centre to Munich " + TripsFromCentreToMunich);
+                System.out.println("Trips from centre to Munich " + TripsFromCentreToMunich);
                 System.out.println("Trips from Munich to centre " + TripsFromMunichToCentre);
-                System.out.println("Within MunichG" + PersonsWithinMunichG);
+                System.out.println("Within MunichG " + PersonsWithinMunichG);
                 System.out.println("Commuters starting in MunichG " + CommutersStartingInMunichG);
+                System.out.println("Within MunichG " + TripsWithinMunich);
                 System.out.println("Commuters ending in MunichG " + CommutersEndingInMunichG);
+                System.out.println("Commuters starting in Munich " + CommutersStartingInMunich);
+                System.out.println("Commuters ending in Munich " + CommutersEndingInMunich);
                 System.out.println("Trips without adding a garage " + TripsWithoutAddingGarage);
 
     }
