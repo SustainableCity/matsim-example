@@ -35,7 +35,7 @@ public class AddGarParkingFreeCentre {
     private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plansTest.xml";
     private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plansTestG.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
-    private static final String Garages = "C:/matsimfiles/input/testgarages2.csv";
+    private static final String Garages = "C:/matsimfiles/input/testgarages.csv";
     private static final String DISTRICTS = "C:/matsimfiles/input/MunichDistricts.shp";
     //    private static final String garagePath = "C:/matsimfiles/output/Garages.xml";    //The output file of demand generation
     private static final String COUNTIES = "C:/matsimfiles/input/lkr_ex.shp";
@@ -640,6 +640,7 @@ public class AddGarParkingFreeCentre {
 
                             } else {
                                 CommutersEndingInMunich = CommutersEndingInMunich + 1;
+
                             }
 
                             Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
@@ -662,7 +663,6 @@ public class AddGarParkingFreeCentre {
 
                         }
                     }
-
 
                     //System.out.println("WritePlan");
                     personNew.addPlan(planNew);

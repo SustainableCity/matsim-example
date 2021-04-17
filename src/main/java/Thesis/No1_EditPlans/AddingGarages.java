@@ -32,9 +32,9 @@ import java.util.Map;
 public class AddingGarages {
 
     private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_CarCom_5.xml";
-    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarComGarages1_5.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarComGarages39_5.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
-    private static final String Garages = "C:/matsimfiles/input/testgarages1.csv";
+    private static final String Garages = "C:/matsimfiles/input/testgarages.csv";
     private static final String DISTRICTS = "C:/matsimfiles/input/MunichDistricts.shp";
     //    private static final String garagePath = "C:/matsimfiles/output/Garages.xml";    //The output file of demand generation
     private static final String COUNTIES = "C:/matsimfiles/input/lkr_ex.shp";
@@ -44,11 +44,11 @@ public class AddingGarages {
     private static Scenario scenario;
     private static Scenario scenarioNew;
 
-    private static final Map<Integer, Integer> garageListCapacity = new HashMap<>(40);
-    private static final Map<Integer, Double> garageListX = new HashMap<>(40);
-    private static final Map<Integer, Double> garageListY = new HashMap<>(40);
+    private static final Map<Integer, Integer> garageListCapacity = new HashMap<>();
+    private static final Map<Integer, Double> garageListX = new HashMap<>();
+    private static final Map<Integer, Double> garageListY = new HashMap<>();
     private static final Map<Integer, Integer> garageDistricts = new HashMap<>();
-    private static final Map<String, Double> garageDistances = new HashMap<>(40);
+    private static final Map<String, Double> garageDistances = new HashMap<>();
     int PersonsWithinMunich = 0;
     int CommutersStartingInMunich = 0;
     int CommutersEndingInMunich = 0;
@@ -65,7 +65,6 @@ public class AddingGarages {
         scenarioNew = ScenarioUtils.createScenario(ConfigUtils.createConfig());
         popModified = scenarioNew.getPopulation();
         new MatsimNetworkReader(scenarioNew.getNetwork()).readFile(Network);
-
     }
 
     public static void main(String[] args) throws IOException {
@@ -73,7 +72,6 @@ public class AddingGarages {
         AddingGarages mp = new AddingGarages();
         mp.readGarageCSV();
         mp.addGarage2Plan(popInitial, scenarioNew); //scenario deleted
-
     }
 
     public void readGarageCSV() throws IOException {
@@ -420,7 +418,6 @@ public class AddingGarages {
                         break;
                     }
                     oldLegCount += 1;
-
                 }
             }
 
@@ -511,10 +508,9 @@ public class AddingGarages {
             PopulationWriter pw = new PopulationWriter(scenarioNew.getPopulation(), scenarioNew.getNetwork());
             pw.write(PLANSFILEOUTPUT);
             int noPersons = popInitial.getPersons().size();
-            System.out.println("Number of Persons");
-            System.out.println(noPersons);
+            System.out.println("Number of Persons "+ noPersons);
             int noPersonsN = popModified.getPersons().size();
-            System.out.println(noPersonsN);
+            System.out.println("Number of Persons " + noPersonsN);
             System.out.println("GaragelistCapacity " + garageListCapacity);
     }
 }
