@@ -182,7 +182,7 @@ public class AddGarParkingFreeCentre {
             shapeMap = readShapeFile(DISTRICTS, "BOROUGH");
             shapeMap2 = readShapeFile(COUNTIES, "SCH");
             Geometry munich = shapeMap2.get("09162");
-            Geometry centre = shapeMap.get("1,2,3,4,5,6,8");
+            Geometry centre = shapeMap.get("1"); //,2,3,4,5,6,8
             Point p1;
             Point p2;
             double x1;
@@ -204,6 +204,7 @@ public class AddGarParkingFreeCentre {
                 if (random >= 0.7) {
                     if (centre.contains(p1) && centre.contains(p2)) {
                         PersonsWithinCentre = PersonsWithinCentre + 1;
+                        break;
 
                     } else if (centre.contains(p1) && !centre.contains(p2) && munich.contains(p2)) {
 
@@ -498,6 +499,7 @@ public class AddGarParkingFreeCentre {
                         // 70 %
                         if (centre.contains(p1) && centre.contains(p2)) {
                             PersonsWithinCentre = PersonsWithinCentre +1;
+                            break;
 
                         } else if (centre.contains(p1) && munich.contains(p2)) {
 
