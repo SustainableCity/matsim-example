@@ -217,7 +217,7 @@ public class AddingGarages {
                 travelTime = NetworkUtils.getEuclideanDistance(FirstLocation, SecondLocation) / AvSpeed;
 
 
-                if (random >= 0.0) {
+                if (random >= 0.7) {
                     Coord curGarage;
                     Coord interGarage;
 
