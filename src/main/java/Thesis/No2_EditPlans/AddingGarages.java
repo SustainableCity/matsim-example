@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AddingGarages {
-    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_CarCom.xml";
-    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CCG.xml";
+    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plansTestC.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_G5.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
     private static final String Garages = "C:/matsimfiles/input/testgarages2.csv";
     //    private static final String garagePath = "C:/matsimfiles/output/Garages.xml";    //The output file of demand generation
@@ -46,11 +46,16 @@ public class AddingGarages {
     private static final Map<Integer, Double> garageListY = new HashMap<>();
     private static final Map<Integer, Integer> garageDistricts = new HashMap<>();
     private static final Map<String, Double> garageDistances = new HashMap<>();
-    int WithinMunichG = 0;
+    int WithinMunich1legG = 0;
+    int WithinMunich2legsG = 0;
+    int WithinMunich2InterG = 0;
     int WithinMunich = 0;
     int StartingInMunichG = 0;
+    int StartingInMunich2legsG = 0;
     int StartingInMunich = 0;
-    int HeadingToMunichG = 0;
+    int HeadingToMunich1legG = 0;
+    int HeadingToMunich2InterG = 0;
+    int HeadingToMunich2legsShortWithoutG = 0;
     int HeadingToMunich = 0;
     double AvSpeed = 30 / 3.6; // value in km/h and converted in m/s
     int countPlans;
@@ -109,6 +114,16 @@ public class AddingGarages {
 
         return new Coord(x, y);
     }
+    public Coord selectGarage2(int idGarage) {
+
+        //System.out.println(garageListX);
+        double x = garageListX.get(idGarage);
+        double y = garageListY.get(idGarage);
+
+
+        return new Coord(x, y);
+    }
+
 
     //Read in shapefile
     public static Map<String, Geometry> readShapeFile(String filename, String attrString) {
@@ -140,7 +155,7 @@ public class AddingGarages {
             //System.out.println(i);
 
             if (garageListCapacity.get(i) > 0) {
-                coordGa = selectGarage(i); //
+                coordGa = selectGarage2(i); //
                 distance = NetworkUtils.getEuclideanDistance(HomeCoord, coordGa);
                 distances.add(i - 1, distance);
             } else {
@@ -198,21 +213,21 @@ public class AddingGarages {
                 FirstLocation = PlanUtils.getPreviousActivity(plan, leg).getCoord();
                 SecondLocation = PlanUtils.getNextActivity(plan, leg).getCoord();
                 int curGarageId = chooseGarageByDistance(personId + "departure ", FirstLocation);
-
                 int interGarageId = chooseGarageByDistance(personId + "departure ", SecondLocation);
-
                 travelTime = NetworkUtils.getEuclideanDistance(FirstLocation, SecondLocation) / AvSpeed;
 
 
                 if (random >= 0.0) {
                     Coord curGarage;
                     Coord interGarage;
-                    System.out.println(garageListCapacity);
-                    if (munich.contains(p1) && munich.contains(p2)) {
-                        WithinMunichG = WithinMunichG + 1;
 
+                    if (munich.contains(p1) && munich.contains(p2)) {
+
+                        //System.out.println("1-1: before adding " + garageListCapacity);
                         curGarage = selectGarage(curGarageId);
+                        //System.out.println("1-1: after adding " + garageListCapacity);
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
+
                         garage1.setEndTime(endHomeTime1 - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
 
                         planNew.addActivity(garage1);
@@ -230,8 +245,15 @@ public class AddingGarages {
                         Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
                         Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                         if (legSize == 1) {
-                            actNew2.setEndTime(actOld2.getEndTime());
+                            actNew2.setMaximumDuration(90);
                             planNew.addActivity(actNew2);
+
+                            planNew.addLeg(leg);
+
+                            curGarage = selectGarage(curGarageId);
+                            Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
+                            planNew.addActivity(garage4);
+                            WithinMunich1legG = WithinMunich1legG + 1;
                             break;
                         } else {
                             if ((endSecondTime - endHomeTime1 + travelTime) >= 2.0 * 3600) {
@@ -243,7 +265,9 @@ public class AddingGarages {
                                 Leg toGarage2 = scenarioNew.getPopulation().getFactory().createLeg("car");
                                 planNew.addLeg(toGarage2);
 
+                                //System.out.println("1-2: before addingI " + garageListCapacity);
                                 interGarage = selectGarage(interGarageId);
+                                //System.out.println("1-2: after addingI " + garageListCapacity);
                                 Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
                                 garageI.setEndTime(actOld2.getEndTime() - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
                                 planNew.addActivity(garageI);
@@ -257,9 +281,12 @@ public class AddingGarages {
                                 Leg dropOff2 = scenarioNew.getPopulation().getFactory().createLeg("car");
                                 planNew.addLeg(dropOff2);
 
+                                //System.out.println("1-3: before adding2 " + garageListCapacity);
                                 curGarage = selectGarage(curGarageId);
+                                //System.out.println("1-3: after adding2 " + garageListCapacity);
                                 Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
                                 planNew.addActivity(garage4);
+                                WithinMunich2InterG = WithinMunich2InterG + 1;
                                 break;
                             } else {
 
@@ -275,17 +302,20 @@ public class AddingGarages {
 
                                 Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
                                 planNew.addLeg(dropOff);
-
+                                //System.out.println("1-3: before addingE " + garageListCapacity);
                                 curGarage = selectGarage(curGarageId);
+                                //System.out.println("1-3: after addingE " + garageListCapacity);
                                 Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
                                 planNew.addActivity(garage4);
+                                WithinMunich2legsG = WithinMunich2legsG +1;
                                 break;
                             }
                         }
                     } else if (munich.contains(p1) && !munich.contains(p2)) {
-                        StartingInMunichG = StartingInMunichG + 1;
 
+                        //System.out.println("2-1: before adding " + garageListCapacity);
                         curGarage = selectGarage(curGarageId);
+                        //System.out.println("2-1: after adding " + garageListCapacity);
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
                         garage1.setEndTime(endHomeTime1 - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
                         planNew.addActivity(garage1);
@@ -305,6 +335,7 @@ public class AddingGarages {
                         if (legSize == 1) {
                             actNew2.setEndTime(actOld2.getEndTime());
                             planNew.addActivity(actNew2);
+                            StartingInMunichG = StartingInMunichG + 1;
                             break;
                         } else {
                             actNew2.setEndTime(actOld2.getEndTime());
@@ -319,14 +350,16 @@ public class AddingGarages {
                             Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
                             planNew.addLeg(dropOff);
 
+                            //System.out.println("2-2: before addingE " + garageListCapacity);
                             curGarage = selectGarage(curGarageId);
+                            //System.out.println("2-2: after addingE " + garageListCapacity);
                             Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
                             planNew.addActivity(garage4);
+                            StartingInMunich2legsG = StartingInMunich2legsG + 1;
                             break;
                         }
 
                     } else if (!munich.contains(p1) && munich.contains(p2)) {
-                        HeadingToMunichG = HeadingToMunichG + 1;
 
                         Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
                         Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
@@ -344,34 +377,50 @@ public class AddingGarages {
 
                             Leg toGarage = scenarioNew.getPopulation().getFactory().createLeg("car");
                             planNew.addLeg(toGarage);
-
+                            //System.out.println("3-1: before addingI " + garageListCapacity);
                             interGarage = selectGarage(interGarageId);
+                            //System.out.println("3-1: after addingI " + garageListCapacity);
                             Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
                             planNew.addActivity(garageI);
+                            HeadingToMunich1legG = HeadingToMunich1legG + 1;
                             break;
                         } else {
-                            Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("dropOffPoint", actOld2.getCoord());
-                            dropOffPoint.setMaximumDuration(30);
-                            planNew.addActivity(dropOffPoint);
+                            if ((endSecondTime - endHomeTime1 + travelTime) >= 2.0 * 3600) {
+                                Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("dropOffPoint", actOld2.getCoord());
+                                dropOffPoint.setMaximumDuration(30);
+                                planNew.addActivity(dropOffPoint);
 
-                            planNew.addLeg(leg);
+                                planNew.addLeg(leg);
+                                //System.out.println("3-1: before addingI " + garageListCapacity);
+                                interGarage = selectGarage(interGarageId);
+                                //System.out.println("3-1: after addingI " + garageListCapacity);
+                                Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
+                                garageI.setEndTime(actOld2.getEndTime() - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                                planNew.addActivity(garageI);
 
-                            interGarage = selectGarage(interGarageId);
-                            Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
-                            garageI.setEndTime(actOld2.getEndTime() - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
-                            planNew.addActivity(garageI);
+                                planNew.addLeg(leg);
 
-                            planNew.addLeg(leg);
+                                //Second Activity
+                                actNew2.setEndTime(actOld2.getEndTime());
+                                planNew.addActivity(actNew2);
 
-                            //Second Activity
-                            actNew2.setEndTime(actOld2.getEndTime());
-                            planNew.addActivity(actNew2);
+                                planNew.addLeg(leg);
 
-                            planNew.addLeg(leg);
+                                Activity actNew4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
+                                planNew.addActivity(actNew4);
+                                HeadingToMunich2InterG = HeadingToMunich2InterG + 1;
+                                break;
+                            } else{
+                                actNew2.setEndTime(actOld2.getEndTime());
+                                planNew.addActivity(actNew2);
 
-                            Activity actNew4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
-                            planNew.addActivity(actNew4);
-                            break;
+                                planNew.addLeg(leg);
+
+                                Activity actNew4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
+                                planNew.addActivity(actNew4);
+                                HeadingToMunich2legsShortWithoutG = HeadingToMunich2legsShortWithoutG + 1;
+                                break;
+                            }
                         }
                     }
 
@@ -421,6 +470,7 @@ public class AddingGarages {
             System.out.println("CountedPlan " + countPlans);
         }
 
+
         PopulationWriter pw = new PopulationWriter(scenarioNew.getPopulation(), scenarioNew.getNetwork());
         pw.write(PLANSFILEOUTPUT);
         int noPersons = popInitial.getPersons().size();
@@ -428,11 +478,18 @@ public class AddingGarages {
         int noPersonsN = popModified.getPersons().size();
         System.out.println("Number of Persons " + noPersonsN);
         System.out.println("GaragelistCapacity " + garageListCapacity);
-        System.out.println("Within MunichG " + WithinMunichG);
+        System.out.println("Within Munich 2G " + WithinMunich1legG);
+        System.out.println("Within Munich 3G " + WithinMunich2legsG);
+        System.out.println("Within Munich 2G + Inter " + WithinMunich2InterG);
+
         System.out.println("Within Munich " + WithinMunich);
-        System.out.println("Commuters starting in MunichG " + StartingInMunichG);
+        System.out.println("Munich G to Region " + StartingInMunichG);
+        System.out.println("Commuters starting in MunichG " + StartingInMunich2legsG);
         System.out.println("Commuters starting in Munich " + StartingInMunich);
-        System.out.println("Commuters heading to MunichG " + HeadingToMunichG);
+        System.out.println("Heading to MunichG " + HeadingToMunich1legG);
+        System.out.println("Commuters heading to MunichInnter " + HeadingToMunich2InterG);
+        System.out.println("Commuters heading to Munich short term G " + HeadingToMunich2legsShortWithoutG);
         System.out.println("Commuters heading to Munich " + HeadingToMunich);
+
     }
 }
