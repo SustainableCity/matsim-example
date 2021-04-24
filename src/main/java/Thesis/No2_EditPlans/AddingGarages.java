@@ -245,7 +245,7 @@ public class AddingGarages {
                         Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
                         Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                         if (legSize == 1) {
-                            actNew2.setMaximumDuration(90);
+                            actNew2.setMaximumDuration(60);
                             planNew.addActivity(actNew2);
 
                             planNew.addLeg(leg);
@@ -259,7 +259,7 @@ public class AddingGarages {
                             if ((endSecondTime - endHomeTime1 + travelTime) >= 2.0 * 3600) {
                                 Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("dropOffPoint", actOld2.getCoord());
 
-                                dropOffPoint.setMaximumDuration(90);
+                                dropOffPoint.setMaximumDuration(60);
                                 planNew.addActivity(dropOffPoint);
 
                                 Leg toGarage2 = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -297,7 +297,7 @@ public class AddingGarages {
 
                                 //Activity 3 (Home)
                                 Activity actNew3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
-                                actNew3.setMaximumDuration(90);
+                                actNew3.setMaximumDuration(60);
                                 planNew.addActivity(actNew3);
 
                                 Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -344,7 +344,7 @@ public class AddingGarages {
                             planNew.addLeg(leg);
 
                             Activity actNew3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
-                            actNew3.setMaximumDuration(90);
+                            actNew3.setMaximumDuration(60);
                             planNew.addActivity(actNew3);
 
                             Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -372,7 +372,7 @@ public class AddingGarages {
                         Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
                         Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                         if (legSize == 1) {
-                            actNew2.setMaximumDuration(30);
+                            actNew2.setMaximumDuration(60);
                             planNew.addActivity(actNew2);
 
                             Leg toGarage = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -387,7 +387,7 @@ public class AddingGarages {
                         } else {
                             if ((endSecondTime - endHomeTime1 + travelTime) >= 2.0 * 3600) {
                                 Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("dropOffPoint", actOld2.getCoord());
-                                dropOffPoint.setMaximumDuration(30);
+                                dropOffPoint.setMaximumDuration(60);
                                 planNew.addActivity(dropOffPoint);
 
                                 planNew.addLeg(leg);
