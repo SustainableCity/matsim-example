@@ -478,18 +478,18 @@ public class AddingGarages {
         int noPersonsN = popModified.getPersons().size();
         System.out.println("Number of Persons " + noPersonsN);
         System.out.println("GaragelistCapacity " + garageListCapacity);
-        System.out.println("Within Munich 2G " + WithinMunich1legG);
-        System.out.println("Within Munich 3G " + WithinMunich2legsG);
-        System.out.println("Within Munich 2G + Inter " + WithinMunich2InterG);
+        System.out.println("MunichG - MunichG: " + WithinMunich1legG);
+        System.out.println("MunichG - MunichG - MunichG: " + WithinMunich2legsG);
+        System.out.println("MunichG - MunichI - MunichG: " + WithinMunich2InterG);
 
-        System.out.println("Within Munich " + WithinMunich);
-        System.out.println("Munich G to Region " + StartingInMunichG);
-        System.out.println("Commuters starting in MunichG " + StartingInMunich2legsG);
-        System.out.println("Commuters starting in Munich " + StartingInMunich);
-        System.out.println("Heading to MunichG " + HeadingToMunich1legG);
-        System.out.println("Commuters heading to MunichInnter " + HeadingToMunich2InterG);
-        System.out.println("Commuters heading to Munich short term G " + HeadingToMunich2legsShortWithoutG);
-        System.out.println("Commuters heading to Munich " + HeadingToMunich);
+        System.out.println("Munich - Munich (- Munich): " + WithinMunich);
+        System.out.println("MunichG - Region: " + StartingInMunichG);
+        System.out.println("MunichG - Region - MunichG: " + StartingInMunich2legsG);
+        System.out.println("Munich - Region (- Munich): " + StartingInMunich);
+        System.out.println("Region - MunichG: " + HeadingToMunich1legG);
+        System.out.println("Region - MunichI - Region: " + HeadingToMunich2InterG);
+        System.out.println("Region - Munich - Region (30%) S: " + HeadingToMunich2legsShortWithoutG);
+        System.out.println("Region - Munich - (Region S): " + HeadingToMunich);
 
     }
 }
