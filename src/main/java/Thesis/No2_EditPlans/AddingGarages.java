@@ -476,8 +476,8 @@ public class AddingGarages {
         int noPersons = popInitial.getPersons().size();
         System.out.println("Number of Persons " + noPersons);
         int noPersonsN = popModified.getPersons().size();
-        System.out.println("Number of Persons " + noPersonsN);
-        System.out.println("GaragelistCapacity " + garageListCapacity);
+        System.out.println("Number of Persons: " + noPersonsN);
+        System.out.println("GaragelistCapacity: " + garageListCapacity);
         System.out.println("MunichG - MunichG: " + WithinMunich1legG);
         System.out.println("MunichG - MunichG - MunichG: " + WithinMunich2legsG);
         System.out.println("MunichG - MunichI - MunichG: " + WithinMunich2InterG);
@@ -489,7 +489,7 @@ public class AddingGarages {
         System.out.println("Region - MunichG: " + HeadingToMunich1legG);
         System.out.println("Region - MunichI - Region: " + HeadingToMunich2InterG);
         System.out.println("Region - Munich - Region (30%) S: " + HeadingToMunich2legsShortWithoutG);
-        System.out.println("Region - Munich - (Region S): " + HeadingToMunich);
+        System.out.println("Region - Munich - (Region): " + HeadingToMunich);
 
     }
 }
