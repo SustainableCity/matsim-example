@@ -19,7 +19,7 @@ public class RunInitialAssignment {
 
     public static void main(String[] args) {
         Config config = ConfigUtils.createConfig();
-        config.controler().setLastIteration(30);
+        config.controler().setLastIteration(50);
         config.controler().setMobsim("qsim");
         config.controler().setWritePlansInterval(config.controler().getLastIteration());
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
