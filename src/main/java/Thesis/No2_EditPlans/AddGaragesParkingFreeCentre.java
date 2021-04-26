@@ -23,10 +23,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AddGaragesParkingFreeCentre {
 
@@ -37,6 +34,7 @@ public class AddGaragesParkingFreeCentre {
     private static final String DISTRICTS = "C:/matsimfiles/input/CityCentre.shp";
     //    private static final String garagePath = "C:/matsimfiles/output/Garages.xml";    //The output file of demand generation
     private static final String COUNTIES = "C:/matsimfiles/input/lkr_ex.shp";
+    Random randomObj = new Random(5);
 
     private static Population popInitial;
     private static Population popModified;
@@ -50,19 +48,34 @@ public class AddGaragesParkingFreeCentre {
     private static final Map<String, Double> garageDistances = new HashMap<>();
 
     int PersonsWithinCentre = 0;
-    int TripsFromCentreToMunichG = 0;
-    int TripsFromCentreToMunich = 0;
-    int CommutersStartingAtParkAndRide = 0;
-    int TripsFromMunichGToCentre = 0;
-    int TripsFromMunichToCentre = 0;
-    int TripsWithinMunichG = 0;
-    int TripsWithinMunich = 0;
-    int CommutersStartingInMunichG = 0;
-    int CommutersStartingInMunich = 0;
-    int CommutersHeadingToParkAndRide = 0;
-    int CommutersHeadingToMunichG = 0;
-    int CommutersHeadingToMunich = 0;
-    int TripsWithoutAddingGarage = 0;
+
+    int CentreToMunichG = 0;
+    int CentreToMunichGToCentre = 0;
+    int CentreToMunichSToCentre = 0;
+    int CentreToRegion = 0;
+    int CentreToRegionToCentre = 0;
+    int MunichGToCentre = 0;
+    int MunichGToCentreToMunichG = 0;
+    int MunichGToMunichG = 0;
+    int MunichGToMunichGToMunichG = 0;
+    int MunichGToRegion = 0;
+    int MunichGToRegionToMunichG = 0;
+    int RegionToCentre = 0;
+    int RegionToCentreToRegion = 0;
+    int RegionToMunichG = 0;
+    int RegionToMunichGToRegion = 0;
+
+    int CentreToSomewhere = 0;
+    int CentreToSomewhereToCentre = 0;
+    int SomewhereToCentre = 0;
+    int SomewhereToCentreToSomewhere = 0;
+    int MunichToMunich = 0;
+    int MunichToMunichToMunich = 0;
+    int MunichToRegion = 0;
+    int MunichToRegionToMunich = 0;
+    int RegionToMunich = 0;
+    int RegionToMunichToRegion = 0;
+    int SomethingElse = 0;
     double AvSpeed = 30/3.6;
 
 
@@ -118,6 +131,16 @@ public class AddGaragesParkingFreeCentre {
 
         return new Coord(x, y);
     }
+    public Coord selectGarage2(int idGarage) {
+
+        //System.out.println(garageListX);
+        double x = garageListX.get(idGarage);
+        double y = garageListY.get(idGarage);
+
+
+        return new Coord(x, y);
+    }
+
 
     //Read in shapefile
     public static Map<String, Geometry> readShapeFile(String filename, String attrString) {
@@ -149,7 +172,7 @@ public class AddGaragesParkingFreeCentre {
             System.out.println(i);
 
             if (garageListCapacity.get(i) > 0) {
-                coordGa = selectGarage(i); //
+                coordGa = selectGarage2(i); //
                 distance = NetworkUtils.getEuclideanDistance(HomeCoord, coordGa);
                 distances.add(i - 1, distance);
             } else {
@@ -166,6 +189,14 @@ public class AddGaragesParkingFreeCentre {
     int countPlans;
     public void addGarage2Plan(Population popInitial, Scenario scenarioNew) {
 
+        Map<String, Geometry> shapeMap;
+        Map<String, Geometry> shapeMap3;
+        shapeMap = readShapeFile(DISTRICTS, "Borough");
+        shapeMap3 = readShapeFile(DISTRICTS, "Borough");
+        //shapeMap2 = readShapeFile(COUNTIES, "SCH");
+        //Geometry munich = shapeMap2.get("09162");
+        Geometry centre = shapeMap.get("1"); //,2,3,4,5,6,8
+        Geometry munich = shapeMap.get("20");
 
         for (Person person : popInitial.getPersons().values()) {
             Id<Person> personId = Id.createPersonId(person.getId()); //get initial person id to new
@@ -173,7 +204,7 @@ public class AddGaragesParkingFreeCentre {
             Person personNew = scenarioNew.getPopulation().getFactory().createPerson(personId);
             Plan planNew = scenarioNew.getPopulation().getFactory().createPlan();
 
-            double random = Math.random();
+            double random = randomObj.nextDouble();
             int legSize = TripStructureUtils.getLegs(plan).size();
             //int actSize = plan.getPlanElements().size() - legSize;
             double endHomeTime;
@@ -185,14 +216,7 @@ public class AddGaragesParkingFreeCentre {
             Coord SecondLocation;
             Coord curGarage;
             Coord interGarage;
-            Map<String, Geometry> shapeMap;
-            Map<String, Geometry> shapeMap3;
-            shapeMap = readShapeFile(DISTRICTS, "Borough");
-            shapeMap3 = readShapeFile(DISTRICTS, "Borough");
-            //shapeMap2 = readShapeFile(COUNTIES, "SCH");
-            //Geometry munich = shapeMap2.get("09162");
-            Geometry centre = shapeMap.get("1"); //,2,3,4,5,6,8
-            Geometry munich = shapeMap.get("20");
+
             Point p1;
             Point p2;
             double x1;
@@ -242,6 +266,7 @@ public class AddGaragesParkingFreeCentre {
 
                             Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
                             planNew.addActivity(garageI);
+                            CentreToMunichG = CentreToMunichG +1;
                             break;
                         } else {
 
@@ -268,6 +293,7 @@ public class AddGaragesParkingFreeCentre {
 
                                 Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", curGarage);
                                 planNew.addActivity(garage4);
+                                CentreToMunichGToCentre = CentreToMunichGToCentre +1;
                                 break;
                             } else {
                                 actNew2.setEndTime(actOld2.getEndTime());
@@ -278,6 +304,7 @@ public class AddGaragesParkingFreeCentre {
 
                                 Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", curGarage);
                                 planNew.addActivity(garage4);
+                                CentreToMunichSToCentre = CentreToMunichSToCentre +1;
                                 break;
                             }
                         }
@@ -298,6 +325,7 @@ public class AddGaragesParkingFreeCentre {
                         Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                         if (legSize == 1) {
                             planNew.addActivity(actNew2);
+                            CentreToRegion = CentreToRegion +1;
                             break;
                         } else {
                             actNew2.setEndTime(actOld2.getEndTime());
@@ -308,6 +336,7 @@ public class AddGaragesParkingFreeCentre {
 
                             Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", curGarage);
                             planNew.addActivity(garage4);
+                            CentreToRegionToCentre = CentreToRegionToCentre +1;
                             break;
                         }
 
@@ -334,7 +363,7 @@ public class AddGaragesParkingFreeCentre {
 
                         if (legSize == 1) {
                             planNew.addActivity(parkAndRide);
-                            TripsFromMunichGToCentre = TripsFromMunichGToCentre + 1;
+                            MunichGToCentre = MunichGToCentre + 1;
                             break;
                         } else {
 
@@ -360,6 +389,7 @@ public class AddGaragesParkingFreeCentre {
 
                             Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
                             planNew.addActivity(garage4);
+                            MunichGToCentreToMunichG = MunichGToRegionToMunichG +1;
                             break;
                         }
 
@@ -383,8 +413,14 @@ public class AddGaragesParkingFreeCentre {
                         Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
                         Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                         if (legSize == 1) {
-                            actNew2.setEndTime(actOld2.getEndTime());
+                            actNew2.setMaximumDuration(60);
                             planNew.addActivity(actNew2);
+
+                            planNew.addLeg(leg);
+
+                            Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
+                            planNew.addActivity(garage4);
+                            MunichGToMunichG = MunichGToMunichG +1;
                             break;
                         } else {
                             if ((endSecondTime - endHomeTime + intermediateTime) >= 2.0 * 3600) {
@@ -428,6 +464,7 @@ public class AddGaragesParkingFreeCentre {
 
                                 Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
                                 planNew.addActivity(garage4);
+                                MunichGToMunichGToMunichG = MunichGToMunichGToMunichG +1;
                                 break;
                             }
                         }
@@ -452,6 +489,7 @@ public class AddGaragesParkingFreeCentre {
                         if (legSize == 1) {
                             actNew2.setEndTime(actOld2.getEndTime());
                             planNew.addActivity(actNew2);
+                            MunichGToRegion = MunichGToRegion +1;
                             break;
                         } else {
                             actNew2.setEndTime(actOld2.getEndTime());
@@ -468,10 +506,11 @@ public class AddGaragesParkingFreeCentre {
 
                             Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
                             planNew.addActivity(garage4);
+                            MunichGToRegionToMunichG = MunichGToRegionToMunichG +1;
                             break;
                         }
 
-                    } else if (centre.contains(p2)) {
+                    } else if (!munich.contains(p1) && centre.contains(p2)) {
 
                         Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
                         Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), FirstLocation);
@@ -484,7 +523,7 @@ public class AddGaragesParkingFreeCentre {
 
                         if (legSize == 1) {
                             planNew.addActivity(parkAndRide);
-                            CommutersHeadingToParkAndRide = CommutersHeadingToParkAndRide + 1;
+                            RegionToCentre = RegionToCentre + 1;
                             break;
 
                         } else {
@@ -501,6 +540,7 @@ public class AddGaragesParkingFreeCentre {
 
                             Activity actNew3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
                             planNew.addActivity(actNew3);
+                            RegionToCentreToRegion = RegionToCentreToRegion +1;
                             break;
                         }
                     } else if (!munich.contains(p1) && munich.contains(p2)) {
@@ -511,7 +551,6 @@ public class AddGaragesParkingFreeCentre {
                         planNew.addActivity(actNew);
 
                         planNew.addLeg(leg);
-                        CommutersHeadingToMunichG = CommutersHeadingToMunichG + 1;
 
                         //Second Activity:
                         Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
@@ -525,6 +564,7 @@ public class AddGaragesParkingFreeCentre {
 
                             Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
                             planNew.addActivity(garageI);
+                            RegionToMunichG = RegionToMunichG +1;
                             break;
                         } else {
                             Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("dropOffPoint", actOld2.getCoord());
@@ -547,6 +587,7 @@ public class AddGaragesParkingFreeCentre {
 
                             Activity actNew4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
                             planNew.addActivity(actNew4);
+                            RegionToMunichGToRegion = RegionToMunichGToRegion +1;
                             break;
                         }
 
@@ -556,6 +597,8 @@ public class AddGaragesParkingFreeCentre {
                         Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
                         actNew.setEndTime(actOld.getEndTime());
                         planNew.addActivity(actNew);
+
+                        SomethingElse = SomethingElse +1;
 
                         planNew.addLeg(leg);
 
@@ -594,6 +637,7 @@ public class AddGaragesParkingFreeCentre {
                         Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                         if (legSize == 1) {
                             planNew.addActivity(actNew2);
+                            CentreToSomewhere = CentreToSomewhere +1;
                             break;
                         } else {
 
@@ -605,6 +649,7 @@ public class AddGaragesParkingFreeCentre {
 
                             Activity garage4 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", curGarage);
                             planNew.addActivity(garage4);
+                            CentreToSomewhereToCentre = CentreToSomewhereToCentre +1;
                             break;
                         }
 
@@ -858,7 +903,7 @@ public class AddGaragesParkingFreeCentre {
 
                         if (legSize == 1) {
                             planNew.addActivity(parkAndRide);
-//                            TripsFromMunichToCentre = TripsFromMunichToCentre + 1;
+                            SomewhereToCentre = SomewhereToCentre +1;
                             break;
 
                         } else {
@@ -881,6 +926,7 @@ public class AddGaragesParkingFreeCentre {
                             //Activity actOld3 = PlanUtils.getPreviousActivity(plan, leg);
                             Activity actNew3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
                             planNew.addActivity(actNew3);
+                            SomewhereToCentreToSomewhere = SomewhereToCentreToSomewhere +1;
                             break;
                         }
 /*
@@ -942,15 +988,27 @@ public class AddGaragesParkingFreeCentre {
                     } else {
 
                         if (munich.contains(p1) && munich.contains(p2)) {
-                            TripsWithinMunich = TripsWithinMunich + 1;
+                            if (legSize==1) {
+                                MunichToMunich = MunichToMunich +1;
+                            } else {
+                                MunichToMunichToMunich = MunichToMunichToMunich +1;
+                            }
 
                         } else if (munich.contains(p1) && !munich.contains(p2)) {
-                            CommutersStartingInMunich = CommutersStartingInMunich + 1;
+                            if (legSize==1) {
+                                MunichToRegion = MunichToRegion +1;
+                            } else {
+                                MunichToRegionToMunich = MunichToRegionToMunich +1;
+                            }
 
                         } else if (!munich.contains(p1) && munich.contains(p2)) {
-                            CommutersHeadingToMunich = CommutersHeadingToMunich + 1;
+                            if (legSize==1) {
+                                RegionToMunich = RegionToMunich +1;
+                            } else {
+                                RegionToMunichToRegion = RegionToMunichToRegion +1;
+                            }
                         } else {
-                            TripsWithoutAddingGarage = TripsWithoutAddingGarage +1;
+                            SomethingElse = SomethingElse +1;
                         }
                         Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
                         Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
@@ -994,20 +1052,37 @@ public class AddGaragesParkingFreeCentre {
         System.out.println("Number of persons modified: "+ noPersonsN);
         System.out.println("Capacities of garages " + garageListCapacity);
         System.out.println("Counted plans total " + countPlans);
+
         System.out.println("Persons within centre " + PersonsWithinCentre);
-        System.out.println("Trips from centre to MunichG " + TripsFromCentreToMunichG);
-        System.out.println("Trips from centre to Munich " + TripsFromCentreToMunich);
-        System.out.println("Commuters starting at P&R " + CommutersStartingAtParkAndRide);
-        System.out.println("Trips from MunichG to centre " + TripsFromMunichGToCentre);
-        System.out.println("Trips from Munich to centre " + TripsFromMunichToCentre);
-        System.out.println("Within MunichG " + TripsWithinMunichG);
-        System.out.println("Within Munich " + TripsWithinMunich);
-        System.out.println("Commuters starting in MunichG " + CommutersStartingInMunichG);
-        System.out.println("Commuters starting in Munich " + CommutersStartingInMunich);
-        System.out.println("Commuters heading to centre " + CommutersHeadingToParkAndRide);
-        System.out.println("Commuters heading to MunichG " + CommutersHeadingToMunichG);
-        System.out.println("Commuters heading to Munich " + CommutersHeadingToMunich);
-        System.out.println("Trips without adding a garage " + TripsWithoutAddingGarage);
+
+        System.out.println("CentreToMunichG " + CentreToMunichG);
+        System.out.println("CentreToMunichGToCentre " + CentreToMunichGToCentre);
+        System.out.println("CentreToMunichSToCentre " + CentreToMunichSToCentre);
+        System.out.println("CentreToRegion " + CentreToRegion);
+        System.out.println("CentreToRegionToCentre " + CentreToRegionToCentre);
+        System.out.println("MunichGToCentre " + MunichGToCentre);
+        System.out.println("MunichGToCentreToMunichG " + MunichGToCentreToMunichG);
+        System.out.println("MunichGToMunichG " + MunichGToMunichG);
+        System.out.println("MunichGToMunichGToMunichG " + MunichGToMunichGToMunichG);
+        System.out.println("MunichGToRegion " + MunichGToRegion);
+        System.out.println("MunichGToRegionToMunichG " + MunichGToRegionToMunichG);
+        System.out.println("RegionToCentre " + RegionToCentre);
+        System.out.println("RegionToCentreToRegion " + RegionToCentreToRegion);
+        System.out.println("RegionToMunichG " + RegionToMunichG);
+        System.out.println("RegionToMunichGToRegion " + RegionToMunichGToRegion);
+
+        System.out.println("CentreToSomewhere " + CentreToSomewhere);
+        System.out.println("CentreToSomewhereToCentre " + CentreToSomewhereToCentre);
+        System.out.println("SomewhereToCentre " + SomewhereToCentre);
+        System.out.println("SomewhereToCentreToSomewhere " + SomewhereToCentreToSomewhere);
+        System.out.println("MunichToMunich " + MunichToMunich);
+        System.out.println("MunichToMunichToMunich " + MunichToMunichToMunich);
+        System.out.println("MunichToRegion " + MunichToRegion);
+        System.out.println("MunichToRegionToMunich " + MunichToRegionToMunich);
+        System.out.println("RegionToMunich " + RegionToMunich);
+        System.out.println("RegionToMunichToRegion " + RegionToMunichToRegion);
+
+        System.out.println("SomethingElse " + SomethingElse);
 
     }
 }
