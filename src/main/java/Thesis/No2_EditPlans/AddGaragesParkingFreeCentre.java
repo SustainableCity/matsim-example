@@ -28,7 +28,7 @@ import java.util.*;
 public class AddGaragesParkingFreeCentre {
 
     private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_CarCom_WithoutCentre.xml";
-    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarCom_WithoutCentre_GaragesTestPlans.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarCom_WithoutCentre_Garages.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
     private static final String Garages = "C:/matsimfiles/input/testgarages.csv";
     private static final String DISTRICTS = "C:/matsimfiles/input/CityCentre.shp";
@@ -273,7 +273,7 @@ public class AddGaragesParkingFreeCentre {
                             if ((endSecondTime - endHomeTime + intermediateTime) >= 2.0 * 3600) {
                                 Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("dropOffPoint", actOld2.getCoord());
 
-                                dropOffPoint.setMaximumDuration(90);
+                                dropOffPoint.setMaximumDuration(60);
                                 planNew.addActivity(dropOffPoint);
 
                                 Leg toGarage2 = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -367,7 +367,7 @@ public class AddGaragesParkingFreeCentre {
                             break;
                         } else {
 
-                            parkAndRide.setMaximumDuration(90); // neglectable value -> leg = 0 m to the next activity
+                            parkAndRide.setMaximumDuration(60); // neglectable value -> leg = 0 m to the next activity
                             planNew.addActivity(parkAndRide);
 
                             planNew.addLeg(leg); // 0 m !
