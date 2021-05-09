@@ -23,10 +23,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AddingGarages {
     private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plansTestC.xml";
@@ -35,6 +32,7 @@ public class AddingGarages {
     private static final String Garages = "C:/matsimfiles/input/testgarages2.csv";
     //    private static final String garagePath = "C:/matsimfiles/output/Garages.xml";    //The output file of demand generation
     private static final String COUNTIES = "C:/matsimfiles/input/lkr_ex.shp";
+    Random randomObj = new Random(5);
 
     private static Population popInitial;
     private static Population popModified;
@@ -165,13 +163,15 @@ public class AddingGarages {
 
         garageDistances.put(personTag, Collections.min(distances));
 
-
         return distances.indexOf(Collections.min(distances)) + 1;
     }
 
 
     public void addGarage2Plan(Population popInitial, Scenario scenarioNew) {
 
+        Map<String, Geometry> shapeMap;
+        shapeMap = readShapeFile(COUNTIES, "SCH");
+        Geometry munich = shapeMap.get("09162");
 
         for (Person person : popInitial.getPersons().values()) {
             Id<Person> personId = Id.createPersonId(person.getId()); //get initial person id to new
@@ -179,7 +179,7 @@ public class AddingGarages {
             Person personNew = scenarioNew.getPopulation().getFactory().createPerson(personId);
             Plan planNew = scenarioNew.getPopulation().getFactory().createPlan();
 
-            double random = Math.random();
+            double random = randomObj.nextDouble();
             int legSize = TripStructureUtils.getLegs(plan).size();
             //int actSize = plan.getPlanElements().size() - legSize;
             double endHomeTime1;
@@ -190,9 +190,6 @@ public class AddingGarages {
             Coord FirstLocation;
             Coord SecondLocation;
 
-            Map<String, Geometry> shapeMap;
-            shapeMap = readShapeFile(COUNTIES, "SCH");
-            Geometry munich = shapeMap.get("09162");
             Point p1;
             Point p2;
             double x1;
@@ -228,7 +225,7 @@ public class AddingGarages {
                         //System.out.println("1-1: after adding " + garageListCapacity);
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
 
-                        garage1.setEndTime(endHomeTime1 - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                        garage1.setEndTime(endHomeTime1 - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
 
                         planNew.addActivity(garage1);
 
@@ -269,7 +266,7 @@ public class AddingGarages {
                                 interGarage = selectGarage(interGarageId);
                                 //System.out.println("1-2: after addingI " + garageListCapacity);
                                 Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
-                                garageI.setEndTime(actOld2.getEndTime() - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                                garageI.setEndTime(actOld2.getEndTime() - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
                                 planNew.addActivity(garageI);
 
                                 Leg pickUp2 = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -280,6 +277,13 @@ public class AddingGarages {
 
                                 Leg dropOff2 = scenarioNew.getPopulation().getFactory().createLeg("car");
                                 planNew.addLeg(dropOff2);
+
+                                //Activity 3 (Home)
+                                Activity actNew3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
+                                actNew3.setMaximumDuration(60);
+                                planNew.addActivity(actNew3);
+
+                                planNew.addLeg(leg);
 
                                 //System.out.println("1-3: before adding2 " + garageListCapacity);
                                 curGarage = selectGarage(curGarageId);
@@ -317,7 +321,7 @@ public class AddingGarages {
                         curGarage = selectGarage(curGarageId);
                         //System.out.println("2-1: after adding " + garageListCapacity);
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
-                        garage1.setEndTime(endHomeTime1 - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                        garage1.setEndTime(endHomeTime1 - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
                         planNew.addActivity(garage1);
 
                         Leg pickUp = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -395,7 +399,7 @@ public class AddingGarages {
                                 interGarage = selectGarage(interGarageId);
                                 //System.out.println("3-1: after addingI " + garageListCapacity);
                                 Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
-                                garageI.setEndTime(actOld2.getEndTime() - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                                garageI.setEndTime(actOld2.getEndTime() - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
                                 planNew.addActivity(garageI);
 
                                 planNew.addLeg(leg);

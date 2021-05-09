@@ -209,7 +209,7 @@ public class AddGaragesParkingFreeCentre {
             //int actSize = plan.getPlanElements().size() - legSize;
             double endHomeTime;
             double endSecondTime;
-            double intermediateTime;
+            double tripTravelTime1to2;
             double firstDistance;
             double secondDistance;
             Coord FirstLocation;
@@ -233,21 +233,22 @@ public class AddGaragesParkingFreeCentre {
                 p1 = MGC.xy2Point(x1, y1);
                 p2 = MGC.xy2Point(x2, y2);
 
+                // Instead of defining actOld / actOld 2 within every if-condition anew, a variable firstActivity and SecondActivity could be defined here
                 endHomeTime = PlanUtils.getPreviousActivity(plan, leg).getEndTime();
                 endSecondTime = PlanUtils.getNextActivity(plan, leg).getEndTime();
                 FirstLocation = PlanUtils.getPreviousActivity(plan, leg).getCoord();
                 SecondLocation = PlanUtils.getNextActivity(plan, leg).getCoord();
                 curGarage = chooseGarageByDistance(personId + "departure ", FirstLocation);
                 interGarage = chooseGarageByDistance(personId + "departure ", SecondLocation);
-                intermediateTime = NetworkUtils.getEuclideanDistance(FirstLocation, SecondLocation) / AvSpeed;
-                firstDistance = NetworkUtils.getEuclideanDistance(FirstLocation, curGarage);
-                secondDistance = NetworkUtils.getEuclideanDistance(SecondLocation, interGarage);
+                tripTravelTime1to2 = NetworkUtils.getEuclideanDistance(FirstLocation, SecondLocation) / AvSpeed;
+//                firstDistance = NetworkUtils.getEuclideanDistance(FirstLocation, curGarage);
+//                secondDistance = NetworkUtils.getEuclideanDistance(SecondLocation, interGarage);
 
                 if (random >= 0.7) {
                     if (centre.contains(p1) && munich.contains(p2)) {
 
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", curGarage);
-                        garage1.setEndTime(endHomeTime - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                        garage1.setEndTime(endHomeTime + (garageDistances.get(personId + "departure ") / AvSpeed)); // P&R EndTime: Home EndTime + travel time of Home - P&R
 
                         planNew.addActivity(garage1);
 
@@ -258,7 +259,7 @@ public class AddGaragesParkingFreeCentre {
                         Activity actOld2 = PlanUtils.getNextActivity(plan, leg);
                         Activity actNew2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld2.getType(), actOld2.getCoord());
                         if (legSize == 1) {
-                            actNew2.setMaximumDuration(90);
+                            actNew2.setMaximumDuration(60);
                             planNew.addActivity(actNew2);
 
                             Leg toGarage1 = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -270,7 +271,7 @@ public class AddGaragesParkingFreeCentre {
                             break;
                         } else {
 
-                            if ((endSecondTime - endHomeTime + intermediateTime) >= 2.0 * 3600) {
+                            if ((endSecondTime - endHomeTime + tripTravelTime1to2) >= 2.0 * 3600) {
                                 Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("dropOffPoint", actOld2.getCoord());
 
                                 dropOffPoint.setMaximumDuration(60);
@@ -280,7 +281,7 @@ public class AddGaragesParkingFreeCentre {
                                 planNew.addLeg(toGarage2);
 
                                 Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
-                                garageI.setEndTime(actOld2.getEndTime() - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                                garageI.setEndTime(actOld2.getEndTime() - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
                                 planNew.addActivity(garageI);
 
                                 Leg pickUp = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -312,7 +313,7 @@ public class AddGaragesParkingFreeCentre {
                     } else if (centre.contains(p1) && !munich.contains(p2)) {
 
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", curGarage);
-                        garage1.setEndTime(endHomeTime - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                        garage1.setEndTime(endHomeTime + (garageDistances.get(personId + "departure ") / AvSpeed)); // P&R EndTime: Home EndTime + travel time from centre to P&R
 
                         planNew.addActivity(garage1);
 
@@ -343,7 +344,7 @@ public class AddGaragesParkingFreeCentre {
                     } else if (munich.contains(p1) && centre.contains(p2)) {
 
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
-                        garage1.setEndTime(endHomeTime - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                        garage1.setEndTime(endHomeTime - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
 
                         planNew.addActivity(garage1);
 
@@ -367,21 +368,21 @@ public class AddGaragesParkingFreeCentre {
                             break;
                         } else {
 
-                            parkAndRide.setMaximumDuration(60); // neglectable value -> leg = 0 m to the next activity
+                            parkAndRide.setMaximumDuration(60); // negligible value -> leg distance = 0 m to the next activity
                             planNew.addActivity(parkAndRide);
 
                             planNew.addLeg(leg); // 0 m !
 
                             // not writing last activity and instead:
                             Activity garage3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", interGarage);
-                            garage3.setEndTime(endSecondTime + garageDistances.get(personId + "departure ") / AvSpeed); ///+ Travel time
+                            garage3.setEndTime(endSecondTime + (garageDistances.get(personId + "departure ") / AvSpeed)); ///+ Travel time
                             planNew.addActivity(garage3);
 
                             planNew.addLeg(leg);
 
                             Activity actOld3 = PlanUtils.getPreviousActivity(plan, leg);
                             Activity actNew3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld3.getType(), actOld3.getCoord());
-                            actNew3.setMaximumDuration(90);
+                            actNew3.setMaximumDuration(60);
                             planNew.addActivity(actNew3);
 
                             Leg dropOff = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -396,7 +397,7 @@ public class AddGaragesParkingFreeCentre {
                     } else if (munich.contains(p1) && munich.contains(p2)) {
 
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
-                        garage1.setEndTime(endHomeTime - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                        garage1.setEndTime(endHomeTime - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
 
                         planNew.addActivity(garage1);
                         //System.out.print("davor ");
@@ -423,17 +424,17 @@ public class AddGaragesParkingFreeCentre {
                             MunichGToMunichG = MunichGToMunichG +1;
                             break;
                         } else {
-                            if ((endSecondTime - endHomeTime + intermediateTime) >= 2.0 * 3600) {
+                            if ((endSecondTime - endHomeTime + tripTravelTime1to2) >= 2.0 * 3600) {
                                 Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("DropOffPoint", actOld2.getCoord());
 
-                                dropOffPoint.setMaximumDuration(90);
+                                dropOffPoint.setMaximumDuration(60);
                                 planNew.addActivity(dropOffPoint);
 
                                 Leg toGarage2 = scenarioNew.getPopulation().getFactory().createLeg("car");
                                 planNew.addLeg(toGarage2);
 
                                 Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
-                                garageI.setEndTime(actOld2.getEndTime() - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                                garageI.setEndTime(actOld2.getEndTime() - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
                                 planNew.addActivity(garageI);
 
                                 Leg pickUp2 = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -471,7 +472,7 @@ public class AddGaragesParkingFreeCentre {
                     } else if (munich.contains(p1) && !munich.contains(p2)) {
 
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", curGarage);
-                        garage1.setEndTime(endHomeTime - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                        garage1.setEndTime(endHomeTime - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
                         planNew.addActivity(garage1);
 
                         Leg pickUp = scenarioNew.getPopulation().getFactory().createLeg("car");
@@ -513,7 +514,7 @@ public class AddGaragesParkingFreeCentre {
                     } else if (!munich.contains(p1) && centre.contains(p2)) {
 
                         Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
-                        Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), FirstLocation);
+                        Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
                         actNew.setEndTime(actOld.getEndTime());
                         planNew.addActivity(actNew);
 
@@ -527,14 +528,14 @@ public class AddGaragesParkingFreeCentre {
                             break;
 
                         } else {
-                            parkAndRide.setMaximumDuration(30);
+                            parkAndRide.setMaximumDuration(60);
                             planNew.addActivity(parkAndRide);
 
                             planNew.addLeg(leg); //  0 m !
 
-                            Activity garage3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", interGarage);
-                            garage3.setEndTime(endSecondTime + garageDistances.get(personId + "departure ") / AvSpeed); ///CHECK""""
-                            planNew.addActivity(garage3);
+                            Activity parkAndRide2 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", interGarage);
+                            parkAndRide2.setEndTime(endSecondTime + (garageDistances.get(personId + "departure ") / AvSpeed));
+                            planNew.addActivity(parkAndRide2);
 
                             planNew.addLeg(leg);
 
@@ -574,7 +575,7 @@ public class AddGaragesParkingFreeCentre {
                             planNew.addLeg(leg);
 
                             Activity garageI = scenarioNew.getPopulation().getFactory().createActivityFromCoord("garage", interGarage);
-                            garageI.setEndTime(actOld2.getEndTime() - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                            garageI.setEndTime(actOld2.getEndTime() - (garageDistances.get(personId + "departure ") / AvSpeed)); // determine average speed
                             planNew.addActivity(garageI);
 
                             planNew.addLeg(leg);
@@ -625,7 +626,7 @@ public class AddGaragesParkingFreeCentre {
 //                    interGarage = chooseGarageByDistance(personId + "departure ", SecondLocation);
 
                         Activity garage1 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", curGarage);
-                        garage1.setEndTime(endHomeTime - garageDistances.get(personId + "departure ") / AvSpeed); // determine average speed
+                        garage1.setEndTime(endHomeTime + (garageDistances.get(personId + "departure ") / AvSpeed));
 
                         planNew.addActivity(garage1);
 
@@ -885,9 +886,8 @@ public class AddGaragesParkingFreeCentre {
 //                    SecondLocation = PlanUtils.getNextActivity(plan, leg).getCoord();
 //                    interGarage = chooseGarageByDistance(personId + "departure ", SecondLocation);
 
-
                         Activity actOld = PlanUtils.getPreviousActivity(plan, leg);
-                        Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), FirstLocation);
+                        Activity actNew = scenarioNew.getPopulation().getFactory().createActivityFromCoord(actOld.getType(), actOld.getCoord());
                         actNew.setEndTime(actOld.getEndTime());
                         planNew.addActivity(actNew);
 
@@ -918,7 +918,7 @@ public class AddGaragesParkingFreeCentre {
 //                        DestinationLocation = actNew2.getCoord();
 //                        Coord coord3 = chooseGarageByDistance(personId + "returning ", DestinationLocation);
                             Activity garage3 = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", interGarage);
-                            garage3.setEndTime(actOld2.getEndTime() + garageDistances.get(personId + "departure ") / AvSpeed); ///CHECK""""
+                            garage3.setEndTime(actOld2.getEndTime() + (garageDistances.get(personId + "departure ") / AvSpeed));
                             planNew.addActivity(garage3);
 
                             planNew.addLeg(leg);
