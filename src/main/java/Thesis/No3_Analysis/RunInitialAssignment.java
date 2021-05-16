@@ -19,14 +19,14 @@ public class RunInitialAssignment {
 
     public static void main(String[] args) {
         Config config = ConfigUtils.createConfig();
-        config.controler().setLastIteration(50);
+        config.controler().setLastIteration(10);
         config.controler().setMobsim("qsim");
         config.controler().setWritePlansInterval(config.controler().getLastIteration());
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
-        config.controler().setOutputDirectory("C:/matsimfiles/output/simulation/TestGG1");
+        config.controler().setOutputDirectory("C:/matsimfiles/output/simulation/TestC1");
         config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
 
-        config.qsim().setEndTime(24*3600);
+        config.qsim().setEndTime(28*3600);
         config.qsim().setTrafficDynamics(QSimConfigGroup.TrafficDynamics.withHoles);
         config.qsim().setFlowCapFactor(0.05);
         config.qsim().setStorageCapFactor(0.105);
@@ -37,7 +37,7 @@ public class RunInitialAssignment {
         config.qsim().setUsingThreadpool(true);
 
         config.network().setInputFile("C:/matsimfiles/input/mergedNetwork2018.xml");
-        config.plans().setInputFile("C:/matsimfiles/input/Test/plans_G5.xml");
+        config.plans().setInputFile("C:/matsimfiles/input/Test/plansTestC.xml");
         config.transit().setUseTransit(false);
 //        config.transit().setTransitScheduleFile("C:/matsimfiles/input/schedule2018.xml");
 //        config.transit().setVehiclesFile("C:/matsimfiles/input/vehicles2018.xml");

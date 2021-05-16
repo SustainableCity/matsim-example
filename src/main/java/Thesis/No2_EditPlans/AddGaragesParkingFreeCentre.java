@@ -899,7 +899,7 @@ public class AddGaragesParkingFreeCentre {
 //                    Coord DestinationLocation;
 //                    DestinationLocation = actNew2.getCoord();
 //                    Coord coord2 = chooseGarageByDistance(personId + "returning ", DestinationLocation);
-                        Activity parkAndRide = scenarioNew.getPopulation().getFactory().createActivityFromCoord("ParkAndRide", interGarage);
+                        Activity parkAndRide = scenarioNew.getPopulation().getFactory().createActivityFromCoord("parkAndRide", interGarage);
 
                         if (legSize == 1) {
                             planNew.addActivity(parkAndRide);
