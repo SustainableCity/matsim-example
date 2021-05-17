@@ -425,7 +425,7 @@ public class AddGaragesParkingFreeCentre {
                             break;
                         } else {
                             if ((endSecondTime - endHomeTime + tripTravelTime1to2) >= 2.0 * 3600) {
-                                Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("DropOffPoint", actOld2.getCoord());
+                                Activity dropOffPoint = scenarioNew.getPopulation().getFactory().createActivityFromCoord("dropOffPoint", actOld2.getCoord());
 
                                 dropOffPoint.setMaximumDuration(60);
                                 planNew.addActivity(dropOffPoint);
