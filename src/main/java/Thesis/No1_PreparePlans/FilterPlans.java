@@ -1,4 +1,4 @@
-package Thesis.Step0_Preparation;
+package Thesis.No1_PreparePlans;
 
 import java.util.*;
 
@@ -21,11 +21,12 @@ import org.opengis.feature.simple.SimpleFeature;
 
 public class FilterPlans {
 
-    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_2011.xml";
-    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_2011_onlyAuto_inMUC.xml";
+    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_CarCom.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarCom_WithoutCentre.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
     private static final String COUNTIES = "C:/matsimfiles/input/lkr_ex.shp";          //Polygon shapefile for demand generation
-
+    private static final String DISTRICTS = "C:/matsimfiles/input/CityCentre.shp";
+    private static int PersonsWithinCentre = 0;
 
 
     public static void main(String[] args) {
@@ -37,10 +38,13 @@ public class FilterPlans {
 
         final Population pop = scenario.getPopulation();
 
+        int countPlans = 0;
         System.out.println(pop.getPersons().size());
 
         Map<String,Geometry> shapeMap;
         shapeMap = readShapeFile(COUNTIES, "SCH");
+        shapeMap = readShapeFile(DISTRICTS, "Borough");
+        Geometry centre = shapeMap.get("1");
         Geometry munich = shapeMap.get("09162");
         Point p1;
         Point p2;
@@ -68,19 +72,22 @@ public class FilterPlans {
                 p1 = MGC.xy2Point(x1, y1);
                 p2 = MGC.xy2Point(x2, y2);
 
-                if (TransportMode.walk.equals(leg.getMode()) || TransportMode.pt.equals(leg.getMode()) || TransportMode.bike.equals(leg.getMode())||!munich.contains(p1) || !munich.contains(p2)){
-                    it.remove();
-                }break Legloop;
-
-//                if(PlanUtils.getPreviousActivity(plan,leg).getEndTime()>39600 || PlanUtils.getPreviousActivity(plan,leg).getEndTime()<21600){
+//                if (TransportMode.walk.equals(leg.getMode()) || TransportMode.pt.equals(leg.getMode()) || TransportMode.bike.equals(leg.getMode())||!munich.contains(p1) || !munich.contains(p2)){
 //                    it.remove();
 //                }break Legloop;
 
+                if (centre.contains(p1) && centre.contains(p2)){
+                    it.remove();
+                    PersonsWithinCentre = PersonsWithinCentre + 1;
+                }break Legloop;
+
             }
+            countPlans = countPlans + 1;
         }
 
         System.out.println(pop.getPersons().size());
 
+        System.out.println("Persons within centre" + PersonsWithinCentre);
         PopulationWriter pw = new PopulationWriter(scenario.getPopulation(),scenario.getNetwork());
         pw.write(PLANSFILEOUTPUT);
 

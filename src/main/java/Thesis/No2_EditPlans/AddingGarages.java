@@ -27,7 +27,7 @@ import java.util.*;
 
 public class AddingGarages {
     private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plansTestC.xml";
-    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_G5.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_GTest.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
     private static final String Garages = "C:/matsimfiles/input/testgarages2.csv";
     //    private static final String garagePath = "C:/matsimfiles/output/Garages.xml";    //The output file of demand generation
@@ -55,7 +55,7 @@ public class AddingGarages {
     int HeadingToMunich2InterG = 0;
     int HeadingToMunich2legsShortWithoutG = 0;
     int HeadingToMunich = 0;
-    double AvSpeed = 30 / 3.6; // value in km/h and converted in m/s
+    double AvSpeed = 30 / 3.6; // value in km/h converted in m/s
     int countPlans;
 
     public AddingGarages() {

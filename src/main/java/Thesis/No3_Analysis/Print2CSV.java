@@ -1,4 +1,4 @@
-package Thesis.Step0_Preparation;
+package Thesis.No3_Analysis;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.matsim.api.core.v01.Scenario;
@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class Print2CSV {
-    private static final String PLANSFILEINPUT = "input/plans_2011_onlyAuto_inMUC.xml";
-    private static String csvFile = "input/plans_2011_onlyAuto_inMUC_checkOD.csv" ;
+    private static final String PLANSFILEINPUT = "C:/matsimfiles/output/plans_2011_onlyAuto_MUC.xml";
+    private static String csvFile = "C:/matsimfiles/output/plans_2011_onlyAuto_MUC.checkOD.csv" ;
 
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -34,7 +34,7 @@ public class Print2CSV {
         final Population pop = scenario.getPopulation();
         System.out.println(pop.getPersons().size());
         PrintWriter pw = new PrintWriter(new File(csvFile));
-        pw.println("id,x1,y1,x2,y2");
+        pw.println("id,x1,y1,x2,y2,activity");
 
         int count=1;
 
@@ -50,6 +50,7 @@ public class Print2CSV {
                 sb.append(PlanUtils.getPreviousActivity(plan,leg).getCoord().getY()).append(",");
                 sb.append(PlanUtils.getNextActivity(plan,leg).getCoord().getX()).append(",");
                 sb.append(PlanUtils.getNextActivity(plan,leg).getCoord().getY()).append(",");
+                sb.append(PlanUtils.getNextActivity(plan,leg).getType()).append(",");
                 count +=1;
                 pw.println(sb);
             }

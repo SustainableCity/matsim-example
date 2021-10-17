@@ -77,12 +77,12 @@ public class RunInitialAssignment {
         other.setTypicalDuration(1 * 60 * 60);
         config.planCalcScore().addActivityParams(other);
 
-        PlanCalcScoreConfigGroup.ActivityParams airport = new PlanCalcScoreConfigGroup.ActivityParams("airport");
+/*        PlanCalcScoreConfigGroup.ActivityParams airport = new PlanCalcScoreConfigGroup.ActivityParams("airport");
         airport.setTypicalDuration(8 * 60 * 60);
         config.planCalcScore().addActivityParams(airport);
 
 
-/*        PlansCalcRouteConfigGroup.ModeRoutingParams car = new PlansCalcRouteConfigGroup.ModeRoutingParams("car");
+        PlansCalcRouteConfigGroup.ModeRoutingParams car = new PlansCalcRouteConfigGroup.ModeRoutingParams("car");
         car.setTeleportedModeFreespeedFactor(1.0);
         config.plansCalcRoute().addModeRoutingParams(car);
 

@@ -1,4 +1,4 @@
-package Thesis.No1_EditPlans;
+package Thesis.No1_PreparePlans;
 
 import java.util.*;
 
@@ -25,8 +25,8 @@ import java.util.Map;
 
 public class MucOnlyCarsWithCommuters {
 
-    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_2011.xml";
-    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarCom.xml";
+    private static final String PLANSFILEINPUT = "C:/matsimfiles/input/plans_2011_5.xml";
+    private static final String PLANSFILEOUTPUT = "C:/matsimfiles/output/plans_CarCom_5.xml";
     private static final String Network = "C:/matsimfiles/input/mergedNetwork2018.xml";
     private static final String COUNTIES = "C:/matsimfiles/input/lkr_ex.shp";          //Polygon shapefile for demand generation
 
@@ -53,6 +53,8 @@ public class MucOnlyCarsWithCommuters {
         double x2;
         double y2;
 
+        System.out.println(pop.getPersons().size());
+
         for (Iterator<? extends Person> it = pop.getPersons().values().iterator(); it.hasNext(); ) {
             Person person = it.next();
             Plan plan = person.getSelectedPlan();
@@ -72,19 +74,18 @@ public class MucOnlyCarsWithCommuters {
 
 //                    if (PlanUtils.getPreviousActivity(plan, leg).getType().contains("other") || PlanUtils.getPreviousActivity(plan, leg).getType().contains("home") || PlanUtils.getPreviousActivity(plan, leg).getType().contains("education")) {
 //                        it.remove();
-                    }
-                    break Legloop;
                 }
-            countPlans = countPlans + 1;
+                break Legloop;
             }
 
-            System.out.println(pop.getPersons().size());
-        System.out.println("Counted Plans " + countPlans);
-
-            PopulationWriter pw = new PopulationWriter(scenario.getPopulation(), scenario.getNetwork());
-            pw.write(PLANSFILEOUTPUT);
-
         }
+
+        System.out.println(pop.getPersons().size());
+
+        PopulationWriter pw = new PopulationWriter(scenario.getPopulation(), scenario.getNetwork());
+        pw.write(PLANSFILEOUTPUT);
+
+    }
 
         //Read in shapefile
         public static Map<String, Geometry> readShapeFile (String filename, String attrString){
